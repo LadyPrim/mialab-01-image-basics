@@ -10,7 +10,10 @@ def load_image(img_path, is_label_img):
     #  else use outputPixelType=sitk.sitkFloat32
     """
     pixel_type = None
-    if is_label_img: pixel_type = sitk.sitkUInt8; pixel_type = sitk.sitkFloat32
+    if is_label_img:
+        pixel_type = sitk.sitkUInt8
+    else:
+        pixel_type = sitk.sitkFloat32
     img = sitk.ReadImage(img_path, outputPixelType=pixel_type)
 
     return img
@@ -34,7 +37,7 @@ def to_sitk_image(np_image, reference_img):
     #  (hint: 'CopyInformation')! (otherwise defaults are set)
     """
     img = sitk.GetImageFromArray(np_image)
-    img.CopyInformation(img, reference_img)
+    img.CopyInformation(reference_img)
 
     return img
 
@@ -48,7 +51,8 @@ def preprocess_rescale_numpy(np_img, new_min_val, new_max_val):
     max_val = np_img.max()
     min_val = np_img.min()
 
-    rescaled_np_img = None
+    rescaled_np_img = (np_img - min_val) / (max_val - min_val) # normalize
+    rescaled_np_img = rescaled_np_img * (max_val - min_val) + min_val # scale
 
     return rescaled_np_img
 
@@ -96,9 +100,9 @@ def register_images(img, label_img, atlas_img):
 def extract_feature_median(img):
     """
     EXTRACT_FEATURE_MEDIAN:
-    # todo: apply median filter to image (hint: 'Median')
+    # Apply median filter to image (hint: 'Median')
     """
-    median_img = None  # todo: modify here
+    median_img = sitk.Median(img)
 
     return median_img
 
@@ -106,12 +110,12 @@ def extract_feature_median(img):
 def postprocess_largest_component(label_img):
     """
     POSTPROCESS_LARGEST_COMPONENT:
-    # todo: get the connected components from the label_img (hint: 'ConnectedComponent')
+    # Get the connected components from the label_img (hint: 'ConnectedComponent')
     """
-    connected_components = None  # todo: modify here
+    connected_components = sitk.ConnectedComponent(label_img)
 
-    # todo: order the component by ascending component size (hint: 'RelabelComponent')
-    relabeled_components = None  # todo: modify here
+    # Order the component by ascending component size (hint: 'RelabelComponent')
+    relabeled_components = sitk.RelabelComponent(connected_components, sortByObjectSize=True)
 
     largest_component = relabeled_components == 1  # zero is background
     return largest_component
