@@ -5,12 +5,13 @@ import SimpleITK as sitk
 def load_image(img_path, is_label_img):
     """
     LOAD_IMAGE:
-    # todo: load the image from the image path with the SimpleITK interface (hint: 'ReadImage')
-    # todo: if 'is_label_img' is True use argument outputPixelType=sitk.sitkUInt8,
+    # load the image from the image path with the SimpleITK interface (hint: 'ReadImage')
+    # if 'is_label_img' is True use argument outputPixelType=sitk.sitkUInt8,
     #  else use outputPixelType=sitk.sitkFloat32
     """
-    pixel_type = None  # todo: modify here
-    img = None  # todo: modify here
+    pixel_type = None
+    if is_label_img: pixel_type = sitk.sitkUInt8; pixel_type = sitk.sitkFloat32
+    img = sitk.ReadImage(img_path, outputPixelType=pixel_type)
 
     return img
 
@@ -18,9 +19,9 @@ def load_image(img_path, is_label_img):
 def to_numpy_array(img):
     """
     TO_NUMPY_ARRAY:
-    # todo: transform the SimpleITK image to a numpy ndarray (hint: 'GetArrayFromImage')
+    # transform the SimpleITK image to a numpy ndarray (hint: 'GetArrayFromImage')
     """
-    np_img = None  # todo: modify here
+    np_img = sitk.GetArrayFromImage(img)
 
     return np_img
 
@@ -28,13 +29,12 @@ def to_numpy_array(img):
 def to_sitk_image(np_image, reference_img):
     """
     TO_SITK_IMAGE:
-    # todo: transform the numpy ndarray to a SimpleITK image (hint: 'GetImageFromArray')
-    # todo: do not forget to copy meta-information (e.g., spacing, origin, etc.) from the reference image
+    # transform the numpy ndarray to a SimpleITK image (hint: 'GetImageFromArray')
+    # do not forget to copy meta-information (e.g., spacing, origin, etc.) from the reference image
     #  (hint: 'CopyInformation')! (otherwise defaults are set)
     """
-
-    img = None  # todo: modify here
-    # todo: ...
+    img = sitk.GetImageFromArray(np_image)
+    img.CopyInformation(img, reference_img)
 
     return img
 
@@ -48,7 +48,7 @@ def preprocess_rescale_numpy(np_img, new_min_val, new_max_val):
     max_val = np_img.max()
     min_val = np_img.min()
 
-    rescaled_np_img = None  # todo: modify here
+    rescaled_np_img = None
 
     return rescaled_np_img
 
