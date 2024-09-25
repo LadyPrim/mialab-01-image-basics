@@ -56,10 +56,10 @@ def preprocess_rescale_numpy(np_img, new_min_val, new_max_val):
 def preprocess_rescale_sitk(img, new_min_val, new_max_val):
     """
     PREPROCESS_RESCALE_SITK:
-    # todo: rescale the intensities of the img to the range [new_min_val, new_max_val]
+    # rescale the intensities of the img to the range [new_min_val, new_max_val]
     # (hint: RescaleIntensity)
     """
-    rescaled_img = None  # todo: modify here
+    rescaled_img = sitk.RescaleIntensity(img, new_min_val, new_max_val)
 
     return rescaled_img
 
@@ -74,18 +74,21 @@ def register_images(img, label_img, atlas_img):
     registration_method = _get_registration_method(
         atlas_img, img
     )  # type: sitk.ImageRegistrationMethod
-    transform = None  # todo: modify here
+    transform = registration_method.Execute(atlas_img, img)
 
-    # todo: apply the obtained transform to register the image (img) to the atlas image (atlas_img)
-    # hint: 'Resample' (with referenceImage=atlas_img, transform=transform, interpolator=sitkLinear,
+    # Apply the obtained transform to register the image (img) to the atlas image (atlas_img)
+    # hint: 'Resample' (with referenceImage=atlas_img, transform=transform, interpolator=sitk.sitkLinear,
     # defaultPixelValue=0.0, outputPixelType=img.GetPixelIDValue())
-    registered_img = None  # todo: modify here
+    registered_img = sitk.Resample(img, referenceImage=atlas_img, transform=transform, interpolator=sitk.sitkLinear,
+                                   defaultPixelValues=0.0, outputPixelType=img.GetPixelIDValues())
 
-    # todo: apply the obtained transform to register the label image (label_img) to the atlas image (atlas_img), too
+    # Apply the obtained transform to register the label image (label_img) to the atlas image (atlas_img), too
     # be careful with the interpolator type for label images!
     # hint: 'Resample' (with interpolator=sitkNearestNeighbor, defaultPixelValue=0.0,
     # outputPixelType=label_img.GetPixelIDValue())
-    registered_label = None  # todo: modify here
+    registered_label = sitk.Resample(label_img, referenceImage=atlas_img, transform=transform,
+                                     interpolator=sitk.sitkNearestNeighbor, defaultPixelValue=0.0,
+                                     outputPixelType=label_img.getPixelIDValue())
 
     return registered_img, registered_label
 
