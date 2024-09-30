@@ -4,46 +4,6 @@ import SimpleITK as sitk
 import image_basics as ib
 
 
-# --- DO NOT CHANGE ---
-def _get_registration_method(atlas_img, img) -> sitk.ImageRegistrationMethod:
-    registration_method = sitk.ImageRegistrationMethod()
-
-    # Similarity metric settings.
-    registration_method.SetMetricAsMattesMutualInformation(numberOfHistogramBins=50)
-    registration_method.SetMetricSamplingStrategy(registration_method.REGULAR)
-    registration_method.SetMetricSamplingPercentage(0.2)
-
-    registration_method.SetMetricUseFixedImageGradientFilter(False)
-    registration_method.SetMetricUseMovingImageGradientFilter(False)
-
-    registration_method.SetInterpolator(sitk.sitkLinear)
-
-    # Optimizer settings.
-    registration_method.SetOptimizerAsGradientDescent(
-        learningRate=1.0,
-        numberOfIterations=100,
-        convergenceMinimumValue=1e-6,
-        convergenceWindowSize=10,
-    )
-    registration_method.SetOptimizerScalesFromPhysicalShift()
-
-    # Setup for the multi-resolution framework.
-    registration_method.SetShrinkFactorsPerLevel(shrinkFactors=[4, 2, 1])
-    registration_method.SetSmoothingSigmasPerLevel(smoothingSigmas=[2, 1, 0])
-    registration_method.SmoothingSigmasAreSpecifiedInPhysicalUnitsOn()
-
-    # Set initial transform
-    initial_transform = sitk.CenteredTransformInitializer(
-        atlas_img,
-        img,
-        sitk.Euler3DTransform(),
-        sitk.CenteredTransformInitializerFilter.GEOMETRY,
-    )
-    registration_method.SetInitialTransform(initial_transform, inPlace=False)
-    return registration_method
-
-
-# --- DO NOT CHANGE ---
 def test_load_image():
     """
     TEST_LOAD_IMAGE tests if the load_image function is implemented correctly.

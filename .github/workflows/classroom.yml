@@ -20,7 +20,7 @@ jobs:
       with:
         timeout: '15'
         max-score: '100'
-        setup-command: 'pip install pytest'
+        setup-command: 'pip install -r requirements.txt'
     - name: Autograding Reporter
       # See more here: https://docs.github.com/en/education/manage-coursework-with-github-classroom/learn-with-github-classroom/view-autograding-results 
       uses: classroom-resources/autograding-grading-reporter@v1 
